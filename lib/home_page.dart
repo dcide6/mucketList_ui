@@ -3,6 +3,8 @@ import 'package:mklistui/screens/feed_screen.dart';
 import 'package:mklistui/screens/list_screen.dart';
 import 'package:mklistui/screens/profile_screen.dart';
 
+import 'constants/screen_size.dart';
+
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
@@ -28,6 +30,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    if (size == null) size = MediaQuery.of(context).size;
     return Scaffold(
       key: _key,
       body: IndexedStack(
