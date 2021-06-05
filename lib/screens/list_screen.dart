@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mklistui/constants/screen_size.dart';
+import 'package:mklistui/widgets/mylist_card.dart';
 
 class ListScreen extends StatefulWidget {
   @override
@@ -15,9 +16,35 @@ class _ListScreenState extends State<ListScreen> {
       child: Scaffold(
         body: Container(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               buildDropdown(),
+              buildCard(),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildCard() {
+    return Padding(
+      padding: const EdgeInsets.all(30.0), // 카드 바깥에 패딩
+      child: Card(
+        shadowColor: Colors.grey,
+        elevation: 3,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(32),
+        ),
+        color: Colors.yellow[200],
+        child: Container(
+          width: size.width,
+          child: Padding(
+            padding: const EdgeInsets.all(25.0),
+            child: MyListCard(
+              listDescription: "이 구역 맛집을 아는",
+              listGrade: "얌얌박사",
+            ),
           ),
         ),
       ),
@@ -27,7 +54,7 @@ class _ListScreenState extends State<ListScreen> {
   Widget buildDropdown() {
     return Container(
       width: size.width / 7 * 3,
-      margin: EdgeInsets.symmetric(horizontal: 32, vertical: 50),
+      margin: EdgeInsets.fromLTRB(30, 30, 10, 20),
       child: DropdownButtonHideUnderline(
           child: DropdownButton<String>(
         elevation: 0,
