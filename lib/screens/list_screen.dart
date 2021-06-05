@@ -14,15 +14,49 @@ class _ListScreenState extends State<ListScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: Container(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              buildDropdown(),
-              buildCard(),
-            ],
+        body: Stack(children: [
+          Container(
+            height: size.height * 0.36,
+            width: size.width,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                buildDropdown(),
+                buildCard(),
+              ],
+            ),
           ),
-        ),
+          DraggableScrollableSheet(
+            initialChildSize: 0.6,
+            minChildSize: 0.3,
+            maxChildSize: 0.85,
+            builder: (BuildContext context, myScrollController) {
+              return ClipRRect(
+                child: Container(
+                  child: ListView.separated(
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: ListTile(
+                          onTap: () {},
+                          leading: Text("Food Image"),
+                          subtitle: Text("Tags List"),
+                        ),
+                      );
+                    },
+                    separatorBuilder: (context, index) {
+                      return Divider(
+                        color: Colors.grey,
+                      );
+                    },
+                    itemCount: 30,
+                    controller: myScrollController,
+                  ),
+                ),
+              );
+            },
+          )
+        ]),
       ),
     );
   }
