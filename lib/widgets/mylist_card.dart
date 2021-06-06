@@ -18,7 +18,7 @@ class MyListCard extends StatelessWidget {
       children: [
         Text(
           '리스트 달성률: %',
-          style: TextStyle(fontSize: 15, color: Colors.black),
+          style: TextStyle(fontSize: 12, color: Colors.black),
         ),
         const SizedBox(
           height: 10,
@@ -26,7 +26,7 @@ class MyListCard extends StatelessWidget {
         Text(
           listDescription,
           style: TextStyle(
-            fontSize: 20,
+            fontSize: 15,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -36,7 +36,7 @@ class MyListCard extends StatelessWidget {
         Text(
           listGrade,
           style: TextStyle(
-            fontSize: 20,
+            fontSize: 15,
             fontWeight: FontWeight.bold,
           ),
         ),

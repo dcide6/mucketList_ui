@@ -16,7 +16,7 @@ class _ListScreenState extends State<ListScreen> {
       child: Scaffold(
         body: Stack(children: [
           Container(
-            height: size.height * 0.36,
+            height: size.height * 0.5,
             width: size.width,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -27,7 +27,7 @@ class _ListScreenState extends State<ListScreen> {
             ),
           ),
           DraggableScrollableSheet(
-            initialChildSize: 0.6,
+            initialChildSize: 0.5,
             minChildSize: 0.3,
             maxChildSize: 0.85,
             builder: (BuildContext context, myScrollController) {
@@ -39,6 +39,7 @@ class _ListScreenState extends State<ListScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 20.0),
                         child: ListTile(
                           onTap: () {},
+                          tileColor: Colors.white,
                           leading: Text("Food Image"),
                           subtitle: Text("Tags List"),
                         ),
@@ -47,6 +48,7 @@ class _ListScreenState extends State<ListScreen> {
                     separatorBuilder: (context, index) {
                       return Divider(
                         color: Colors.grey,
+                        height: 0,
                       );
                     },
                     itemCount: 30,
@@ -63,7 +65,7 @@ class _ListScreenState extends State<ListScreen> {
 
   Widget buildCard() {
     return Padding(
-      padding: const EdgeInsets.all(30.0), // 카드 바깥에 패딩
+      padding: const EdgeInsets.all(32.0), // 카드 바깥에 패딩
       child: Card(
         shadowColor: Colors.grey,
         elevation: 3,

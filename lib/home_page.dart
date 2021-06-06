@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:mklistui/screens/feed_screen.dart';
 import 'package:mklistui/screens/list_screen.dart';
 import 'package:mklistui/screens/profile_screen.dart';
-
+import 'package:mklistui/widgets/random_pick_dialog.dart';
+import 'package:shake/shake.dart';
 import 'constants/screen_size.dart';
+import 'package:sensors/sensors.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -11,6 +14,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  ShakeDetector detector;
   List<BottomNavigationBarItem> btmNavItems = [
     BottomNavigationBarItem(
         icon: Icon(Icons.sticky_note_2_rounded), label: '얌얌리스트'),
@@ -27,6 +31,13 @@ class _HomePageState extends State<HomePage> {
     FeedScreen(),
     ProfileScreen(),
   ];
+  @override
+  void initState() {
+    super.initState();
+    detector = ShakeDetector.autoStart(onPhoneShake: () {
+      Get.to(RandomPickDialog(pickedList: "햄버거", pickedListInfo: "맛있습니다"));
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
