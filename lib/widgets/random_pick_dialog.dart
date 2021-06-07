@@ -13,7 +13,6 @@ class RandomPickDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-      backgroundColor: Colors.yellow[100],
       child: Container(
         margin: EdgeInsets.all(5.0),
         width: double.infinity,

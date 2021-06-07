@@ -36,6 +36,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     detector = ShakeDetector.autoStart(onPhoneShake: () {
       Get.to(RandomPickDialog(pickedList: "햄버거", pickedListInfo: "맛있습니다"));
+      // 왜 팝업 바깥화면이 검은색인지 모르겠습니다...
     });
   }
 

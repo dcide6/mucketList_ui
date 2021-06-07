@@ -38,7 +38,32 @@ class _ListScreenState extends State<ListScreen> {
     return SafeArea(
       child: Scaffold(
         appBar: _buildAppBar(),
-        body: _bodyWidget(),
+        body: CustomScrollView(
+          slivers: [
+            SliverPadding(
+              padding: EdgeInsets.all(16.0),
+              sliver: SliverAppBar(
+                title: Text("리스트 달성률 : %"),
+                backgroundColor: Color(0XFFFFD74A),
+                expandedHeight: 200,
+                flexibleSpace: FlexibleSpaceBar(),
+                floating: true,
+                snap: true,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30.0),
+                ),
+              ),
+            ),
+            renderSliverList()
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: Color(0XFFFFD74A),
+          child: Icon(
+            Icons.note_add,
+          ),
+          onPressed: () {},
+        ),
       ),
     );
   }
@@ -82,6 +107,30 @@ class _ListScreenState extends State<ListScreen> {
           icon: Icon(Icons.search),
         )
       ],
+    );
+  }
+
+  renderSliverList() {
+    return SliverList(
+      delegate: SliverChildBuilderDelegate((context, index) {
+        return Column(
+          children: [
+            Divider(
+              height: 1,
+            ),
+            SlidableWidget(
+              child: buildListTile(items[index]),
+              onDismissed: (action) {
+                print(action); //스와이프액션
+                return dismissSlidableItem(context, index, action);
+              },
+            ),
+            Divider(
+              height: 1,
+            )
+          ],
+        );
+      }, childCount: items.length),
     );
   }
 
