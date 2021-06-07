@@ -12,57 +12,97 @@ class ListScreen extends StatefulWidget {
 
 class _ListScreenState extends State<ListScreen> {
   static List<String> menu = ['얌얌리스트', '얌얌완료'];
-  List items = ['Orange', 'Grape', 'Carrot', 'Apple', 'Watermelon'];
+  String currentMenu = menu[0];
+  List items = [
+    'Orange',
+    'Grape',
+    'Carrot',
+    'Apple',
+    'Watermelon',
+    'Orange',
+    'Grape',
+    'Carrot',
+    'Apple',
+    'Watermelon',
+    'Watermelon',
+    'Orange',
+    'Grape',
+    'Carrot',
+    'Apple',
+    'WatermelonL'
+  ];
 
   String _selectedMenu = menu[0];
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: Stack(children: [
-          Container(
-            height: size.height * 0.5,
-            width: size.width,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                buildDropdown(),
-                buildCard(),
-              ],
-            ),
-          ),
-          DraggableScrollableSheet(
-            initialChildSize: 0.5,
-            minChildSize: 0.3,
-            maxChildSize: 0.85,
-            builder: (BuildContext context, myScrollController) {
-              return ClipRRect(
-                child: Container(
-                  child: ListView.separated(
-                    itemBuilder: (context, index) {
-                      return SlidableWidget(
-                        child: buildListTile(items[index]),
-                        onDismissed: (action) {
-                          print(action); //스와이프액션
-                          return dismissSlidableItem(context, index, action);
-                        },
-                      );
-                    },
-                    separatorBuilder: (context, index) {
-                      return Divider(
-                        color: Colors.grey,
-                        height: 0,
-                      );
-                    },
-                    itemCount: items.length,
-                    controller: myScrollController,
-                  ),
-                ),
-              );
-            },
-          )
-        ]),
+        appBar: _buildAppBar(),
+        body: _bodyWidget(),
       ),
+    );
+  }
+
+  AppBar _buildAppBar() {
+    return AppBar(
+      title: GestureDetector(
+        onTap: () {},
+        child: PopupMenuButton(
+          offset: Offset(0, 25),
+          shape: ShapeBorder.lerp(
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+              1),
+          onSelected: (menu) {
+            setState(() {
+              currentMenu = menu;
+            });
+          },
+          itemBuilder: (BuildContext context) {
+            return [
+              PopupMenuItem<String>(value: menu[0], child: Text(menu[0])),
+              PopupMenuItem<String>(value: menu[1], child: Text(menu[1])),
+            ];
+          },
+          child: Row(
+            children: [
+              Text(currentMenu),
+              Icon(
+                Icons.arrow_drop_down_outlined,
+                size: 30,
+              ),
+            ],
+          ),
+        ),
+      ),
+      elevation: 1,
+      actions: [
+        IconButton(
+          onPressed: () {},
+          icon: Icon(Icons.search),
+        )
+      ],
+    );
+  }
+
+  Widget _bodyWidget() {
+    return ListView.separated(
+      itemBuilder: (BuildContext context, int index) {
+        return SlidableWidget(
+          child: buildListTile(items[index]),
+          onDismissed: (action) {
+            print(action); //스와이프액션
+            return dismissSlidableItem(context, index, action);
+          },
+        );
+      },
+      separatorBuilder: (context, index) {
+        return Divider(
+          color: Colors.grey,
+          height: 0,
+        );
+      },
+      itemCount: items.length,
     );
   }
 
@@ -80,14 +120,13 @@ class _ListScreenState extends State<ListScreen> {
     }
   }
 
-  Padding buildListTile(item) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+  Widget buildListTile(item) {
+    return Container(
       child: ListTile(
         onTap: () {},
         tileColor: Colors.white,
-        leading: Text(item),
-        subtitle: Text("Tags List"),
+        leading: Icon(Icons.circle),
+        subtitle: Text(item),
       ),
     );
   }
