@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_navigation/get_navigation.dart';
 import 'package:mklistui/constants/screen_size.dart';
 import 'package:mklistui/widgets/mylist_card.dart';
+import 'package:mklistui/widgets/slidable_widget.dart';
 
 class ListScreen extends StatefulWidget {
   @override
@@ -9,6 +12,8 @@ class ListScreen extends StatefulWidget {
 
 class _ListScreenState extends State<ListScreen> {
   static List<String> menu = ['얌얌리스트', '얌얌완료'];
+  List items = ['Orange', 'Grape', 'Carrot', 'Apple', 'Watermelon'];
+
   String _selectedMenu = menu[0];
   @override
   Widget build(BuildContext context) {
@@ -35,14 +40,12 @@ class _ListScreenState extends State<ListScreen> {
                 child: Container(
                   child: ListView.separated(
                     itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                        child: ListTile(
-                          onTap: () {},
-                          tileColor: Colors.white,
-                          leading: Text("Food Image"),
-                          subtitle: Text("Tags List"),
-                        ),
+                      return SlidableWidget(
+                        child: buildListTile(items[index]),
+                        onDismissed: (action) {
+                          print(action); //스와이프액션
+                          return dismissSlidableItem(context, index, action);
+                        },
                       );
                     },
                     separatorBuilder: (context, index) {
@@ -51,7 +54,7 @@ class _ListScreenState extends State<ListScreen> {
                         height: 0,
                       );
                     },
-                    itemCount: 30,
+                    itemCount: items.length,
                     controller: myScrollController,
                   ),
                 ),
@@ -59,6 +62,32 @@ class _ListScreenState extends State<ListScreen> {
             },
           )
         ]),
+      ),
+    );
+  }
+
+  void dismissSlidableItem(
+      BuildContext context, int index, SlidableAction action) {
+    setState(() {
+      items.removeAt(index);
+    });
+    switch (action) {
+      case SlidableAction.comment:
+        //후기작성스크린
+        break;
+      case SlidableAction.delete:
+        Get.snackbar("삭제", "완료", snackPosition: SnackPosition.BOTTOM);
+    }
+  }
+
+  Padding buildListTile(item) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      child: ListTile(
+        onTap: () {},
+        tileColor: Colors.white,
+        leading: Text(item),
+        subtitle: Text("Tags List"),
       ),
     );
   }
