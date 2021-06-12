@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:mklistui/constants/screen_size.dart';
+import 'package:mklistui/widgets/home_flexiable_appbar.dart';
 import 'package:mklistui/widgets/mylist_card.dart';
 import 'package:mklistui/widgets/slidable_widget.dart';
 
@@ -37,22 +40,31 @@ class _ListScreenState extends State<ListScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: _buildAppBar(),
+        // appBar: _buildAppBar(),
         body: CustomScrollView(
           slivers: [
-            SliverPadding(
-              padding: EdgeInsets.all(16.0),
-              sliver: SliverAppBar(
-                title: Text("리스트 달성률 : %"),
-                backgroundColor: Color(0XFFFFD74A),
-                expandedHeight: 200,
-                flexibleSpace: FlexibleSpaceBar(),
-                floating: true,
-                snap: true,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30.0),
+            SliverAppBar(
+              elevation: 0.5,
+              expandedHeight: 350.0,
+              flexibleSpace: FlexibleSpaceBar(
+                background: Stack(
+                  children: [
+                    Positioned.fill(
+                        child: Image.asset(
+                      "assets/bg2.jpg",
+                      fit: BoxFit.cover,
+                    )),
+                    HomeFlexibleAppBar(),
+                  ],
                 ),
               ),
+            ),
+            SliverAppBar(
+              elevation: 0.5,
+              pinned: true,
+              backgroundColor: Colors.white,
+              flexibleSpace: FlexibleSpaceBar(
+                  title: _buildAppBar(), titlePadding: EdgeInsets.all(0.0)),
             ),
             renderSliverList()
           ],
@@ -100,7 +112,7 @@ class _ListScreenState extends State<ListScreen> {
           ),
         ),
       ),
-      elevation: 1,
+      elevation: 0,
       actions: [
         IconButton(
           onPressed: () {},
