@@ -60,11 +60,24 @@ class _ListScreenState extends State<ListScreen> {
               ),
             ),
             SliverAppBar(
+              toolbarHeight: 10,
+              primary: false,
+              floating: false,
+              pinned: true,
+              brightness: Brightness.light,
+              elevation: 0.0,
+              flexibleSpace: Container(
+                decoration: BoxDecoration(color: Colors.white),
+              ),
+            ),
+            SliverAppBar(
               elevation: 0.5,
               pinned: true,
               backgroundColor: Colors.white,
               flexibleSpace: FlexibleSpaceBar(
-                  title: _buildAppBar(), titlePadding: EdgeInsets.all(0.0)),
+                title: _buildAppBar(),
+                titlePadding: EdgeInsets.all(0.0),
+              ),
             ),
             renderSliverList()
           ],
@@ -103,7 +116,10 @@ class _ListScreenState extends State<ListScreen> {
           },
           child: Row(
             children: [
-              Text(currentMenu),
+              Text(
+                currentMenu,
+                style: TextStyle(fontSize: 20.0),
+              ),
               Icon(
                 Icons.arrow_drop_down_outlined,
                 size: 30,
@@ -199,13 +215,13 @@ class _ListScreenState extends State<ListScreen> {
         shadowColor: Colors.grey,
         elevation: 3,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(32),
+          borderRadius: BorderRadius.circular(12),
         ),
         color: Colors.yellow[200],
         child: Container(
           width: size.width,
           child: Padding(
-            padding: const EdgeInsets.all(25.0),
+            padding: const EdgeInsets.all(30.0),
             child: MyListCard(
               listDescription: "이 구역 맛집을 아는",
               listGrade: "얌얌박사",

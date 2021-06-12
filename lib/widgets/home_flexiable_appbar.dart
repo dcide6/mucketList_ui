@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mklistui/constants/screen_size.dart';
+import 'dart:ui';
 
 class HomeFlexibleAppBar extends StatelessWidget {
   final double appBarHeight = 66.0;
@@ -18,51 +19,61 @@ class HomeFlexibleAppBar extends StatelessWidget {
             ),
             Container(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
                     child: Text(
-                      "이 구역 맛집을 아는",
+                      "이 구역 맛집을 좀 아는",
                       style: TextStyle(
-                        fontSize: 25.0,
-                        color: Colors.white,
+                        fontSize: 23.0,
+                        color: Colors.black,
                       ),
                     ),
                   ),
                   Container(
                     child: Text(
-                      "얌얌박사",
+                      "얌얌박사 😎 ",
                       style: TextStyle(
-                        fontSize: 25.0,
-                        color: Colors.white,
+                        fontSize: 27.0,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
                   SizedBox(
-                    height: 10.0,
+                    height: 30.0,
                   ),
-                  Column(
-                    children: <Widget>[
-                      Text(
-                        '달성률',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 25.0,
-                        ),
+                  Container(
+                    padding: EdgeInsets.all(16.0),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(12),
                       ),
-                      Container(
-                        margin: EdgeInsets.symmetric(vertical: 5),
-                        width: size.width * 0.8,
-                        height: 10,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.all(Radius.circular(15)),
-                          child: LinearProgressIndicator(
-                            value: 0.5,
-                            backgroundColor: Colors.white,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          '달성률 64%',
+                          style: TextStyle(
+                            fontSize: 20.0,
                           ),
                         ),
-                      ),
-                    ],
+                        Container(
+                          margin: EdgeInsets.symmetric(vertical: 15),
+                          width: size.width * 0.8,
+                          height: 14,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.all(Radius.circular(14)),
+                            child: LinearProgressIndicator(
+                              value: 0.5,
+                              backgroundColor: Colors.grey[200],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
