@@ -5,7 +5,9 @@ import 'package:get/get.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:mklistui/constants/screen_size.dart';
 import 'package:mklistui/widgets/home_flexiable_appbar.dart';
+import 'package:mklistui/widgets/list_form.dart';
 import 'package:mklistui/widgets/mylist_card.dart';
+import 'package:mklistui/widgets/random_pick_dialog.dart';
 import 'package:mklistui/widgets/slidable_widget.dart';
 
 class ListScreen extends StatefulWidget {
@@ -87,7 +89,9 @@ class _ListScreenState extends State<ListScreen> {
           child: Icon(
             Icons.note_add,
           ),
-          onPressed: () {},
+          onPressed: () {
+            Get.to(() => ListForm());
+          },
         ),
       ),
     );
@@ -200,7 +204,9 @@ class _ListScreenState extends State<ListScreen> {
   Widget buildListTile(item) {
     return Container(
       child: ListTile(
-        onTap: () {},
+        onTap: () {
+          print(item);
+        },
         tileColor: Colors.white,
         leading: Icon(Icons.circle),
         subtitle: Text(item),
