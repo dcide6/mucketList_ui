@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:mklistui/constants/screen_size.dart';
+import 'package:mklistui/screens/yamlist_search_screen.dart';
 import 'package:mklistui/widgets/home_flexiable_appbar.dart';
 import 'package:mklistui/widgets/list_form.dart';
 import 'package:mklistui/widgets/mylist_card.dart';
@@ -135,9 +136,11 @@ class _ListScreenState extends State<ListScreen> {
       elevation: 0,
       actions: [
         IconButton(
-          onPressed: () {},
           icon: Icon(Icons.search),
-        )
+          onPressed: () {
+            showSearch(context: context, delegate: YamListSearch());
+          },
+        ),
       ],
     );
   }
