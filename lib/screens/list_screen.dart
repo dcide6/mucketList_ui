@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:mklistui/constants/screen_size.dart';
+import 'package:mklistui/screens/review_write_screen.dart';
 import 'package:mklistui/screens/yamlist_search_screen.dart';
 import 'package:mklistui/widgets/home_flexiable_appbar.dart';
 import 'package:mklistui/widgets/list_form.dart';
@@ -192,12 +193,10 @@ class _ListScreenState extends State<ListScreen> {
 
   void dismissSlidableItem(
       BuildContext context, int index, SlidableAction action) {
-    setState(() {
-      items.removeAt(index);
-    });
     switch (action) {
       case SlidableAction.comment:
-        //후기작성스크린
+        print(items[index]);
+        Get.to(() => ReviewWriteScreen(postKey: items[index]));
         break;
       case SlidableAction.delete:
         Get.snackbar("삭제", "완료", snackPosition: SnackPosition.BOTTOM);
