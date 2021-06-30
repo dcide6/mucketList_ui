@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:mklistui/constants/material_white.dart';
 import 'package:mklistui/screens/review_write_screen.dart';
@@ -21,6 +22,10 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: HomePage(),
+      localizationsDelegates: [GlobalMaterialLocalizations.delegate],
+      supportedLocales: [
+        const Locale('ko'),
+      ],
     );
   }
 }

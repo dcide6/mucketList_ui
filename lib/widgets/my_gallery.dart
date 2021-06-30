@@ -45,11 +45,7 @@ class _MyGalleryState extends State<MyGallery> {
                   final path = join(
                       (await getTemporaryDirectory()).path, '$timeInMilli.png');
                   File imageFile = File(path)..writeAsBytesSync(bytes);
-                  Get.to(
-                    () => ReviewWriteScreen(
-                      imageFile: imageFile,
-                    ),
-                  );
+                  Get.back(result: imageFile);
                 } catch (e) {}
               },
               child: Image(

@@ -76,9 +76,7 @@ class _TakePhotoState extends State<TakePhoto> {
       await cameraState.controller.takePicture(path);
 
       File imageFile = File(path);
-      Get.to(() => ReviewWriteScreen(
-            imageFile: imageFile,
-          ));
+      Get.back(result: imageFile);
     } catch (e) {}
   }
 }
