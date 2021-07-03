@@ -15,30 +15,6 @@ class _ListFormState extends State<ListForm> {
     "expenditure",
     "compromise",
     "citizen",
-    "inspire",
-    "relieve",
-    "grave",
-    "incredible",
-    "invasion",
-    "voucher",
-    "girl",
-    "relax",
-    "problem",
-    "queue",
-    "aviation",
-    "profile",
-    "palace",
-    "drive",
-    "money",
-    "revolutionary",
-    "string",
-    "detective",
-    "follow",
-    "text",
-    "bet",
-    "decade",
-    "means",
-    "gossip"
   ];
   TextEditingController _nameController = TextEditingController();
   TextEditingController _foodController = TextEditingController();
@@ -70,34 +46,43 @@ class _ListFormState extends State<ListForm> {
           children: [
             Container(
               padding: EdgeInsets.all(16),
-              child: TypeAheadField<Sikdang>(
-                debounceDuration: Duration(milliseconds: 500),
-                textFieldConfiguration: TextFieldConfiguration(
-                    decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.search),
-                  border: OutlineInputBorder(),
-                  hintText: '식당 검색',
-                )),
-                suggestionsCallback: SikdangApi.getSikdangSuggestions,
-                itemBuilder: (context, Sikdang suggestion) {
-                  final sikdang = suggestion;
-                  return ListTile(
-                    title: Text(sikdang.place_name),
-                  );
-                },
-                noItemsFoundBuilder: (context) => Container(
-                  height: 100,
-                  child: Center(
-                    child: Text(
-                      '식당이 없어요',
-                      style: TextStyle(fontSize: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextButton(onPressed: () {}, child: Text("찾는 식당이 없나요?")),
+                  TypeAheadField<Sikdang>(
+                    debounceDuration: Duration(milliseconds: 500),
+                    textFieldConfiguration: TextFieldConfiguration(
+                        decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.search),
+                      border: OutlineInputBorder(),
+                      hintText: '식당 검색',
+                    )),
+                    suggestionsCallback: SikdangApi.getSikdangSuggestions,
+                    itemBuilder: (context, suggestion) {
+                      return Column(
+                        children: [
+                          ListTile(
+                            title: Text(suggestion.place_name),
+                          ),
+                        ],
+                      );
+                    },
+                    noItemsFoundBuilder: (context) => Container(
+                      height: 100,
+                      child: Center(
+                        child: Text(
+                          '식당이 없어요',
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      ),
                     ),
+                    onSuggestionSelected: (Sikdang suggestion) {
+                      final sikdang = suggestion;
+                      print(sikdang.place_name);
+                    },
                   ),
-                ),
-                onSuggestionSelected: (Sikdang suggestion) {
-                  final sikdang = suggestion;
-                  print(sikdang.place_name);
-                },
+                ],
               ),
             ),
             _devider(17),

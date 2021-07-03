@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mklistui/constants/color.dart';
+import 'package:mklistui/constants/font_style.dart';
 import 'package:mklistui/constants/screen_size.dart';
 import 'dart:ui';
 
@@ -25,8 +27,9 @@ class HomeFlexibleAppBar extends StatelessWidget {
                     child: Text(
                       "이 구역 맛집을 좀 아는",
                       style: TextStyle(
-                        fontSize: 23.0,
-                        color: Colors.black,
+                        fontSize: 22.0,
+                        color: color202020,
+                        fontFamily: "NotoSans-Regular",
                       ),
                     ),
                   ),
@@ -34,9 +37,9 @@ class HomeFlexibleAppBar extends StatelessWidget {
                     child: Text(
                       "얌얌박사 😎 ",
                       style: TextStyle(
-                        fontSize: 27.0,
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
+                        fontFamily: "NotoSans-Bold",
+                        fontSize: 28.0,
+                        color: color202020,
                       ),
                     ),
                   ),
@@ -57,7 +60,8 @@ class HomeFlexibleAppBar extends StatelessWidget {
                         Text(
                           '달성률 64%',
                           style: TextStyle(
-                            fontSize: 20.0,
+                            fontFamily: "NotoSans-Medium",
+                            fontSize: 16.0,
                           ),
                         ),
                         Container(

@@ -3,14 +3,21 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/get_navigation.dart';
+import 'package:intl/intl.dart';
+import 'package:mklistui/constants/color.dart';
 import 'package:mklistui/constants/screen_size.dart';
+import 'package:mklistui/models/restaurant.dart';
+import 'package:mklistui/models/restaurant_fake_data.dart';
 import 'package:mklistui/screens/review_write_screen.dart';
 import 'package:mklistui/screens/yamlist_search_screen.dart';
 import 'package:mklistui/widgets/home_flexiable_appbar.dart';
 import 'package:mklistui/widgets/list_form.dart';
 import 'package:mklistui/widgets/mylist_card.dart';
 import 'package:mklistui/widgets/random_pick_dialog.dart';
+import 'package:mklistui/widgets/search_widget.dart';
 import 'package:mklistui/widgets/slidable_widget.dart';
+
+import 'list_add_screen.dart';
 
 class ListScreen extends StatefulWidget {
   @override
@@ -19,27 +26,34 @@ class ListScreen extends StatefulWidget {
 
 class _ListScreenState extends State<ListScreen> {
   static List<String> menu = ['얌얌리스트', '얌얌완료'];
+  List<Restaurant> mylist = [];
+  String query = '';
   String currentMenu = menu[0];
-  List items = [
-    'Orange',
-    'Grape',
-    'Carrot',
-    'Apple',
-    'Watermelon',
-    'Orange',
-    'Grape',
-    'Carrot',
-    'Apple',
-    'Watermelon',
-    'Watermelon',
-    'Orange',
-    'Grape',
-    'Carrot',
-    'Apple',
-    'WatermelonL'
-  ];
-
+  // List items = [
+  //   'Orange',
+  //   'Grape',
+  //   'Carrot',
+  //   'Apple',
+  //   'Watermelon',
+  //   'Orange',
+  //   'Grape',
+  //   'Carrot',
+  //   'Apple',
+  //   'Watermelon',
+  //   'Watermelon',
+  //   'Orange',
+  //   'Grape',
+  //   'Carrot',
+  //   'Apple',
+  //   'WatermelonL'
+  // ];
   String _selectedMenu = menu[0];
+  @override
+  void initState() {
+    // TODO: implement initState
+    mylist = allRestaurants;
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -49,7 +63,7 @@ class _ListScreenState extends State<ListScreen> {
           slivers: [
             SliverAppBar(
               elevation: 0.5,
-              expandedHeight: 350.0,
+              expandedHeight: size.height / 2.3,
               flexibleSpace: FlexibleSpaceBar(
                 background: Stack(
                   children: [
@@ -64,7 +78,7 @@ class _ListScreenState extends State<ListScreen> {
               ),
             ),
             SliverAppBar(
-              toolbarHeight: 10,
+              toolbarHeight: 15,
               primary: false,
               floating: false,
               pinned: true,
@@ -75,6 +89,7 @@ class _ListScreenState extends State<ListScreen> {
               ),
             ),
             SliverAppBar(
+              toolbarHeight: 30,
               elevation: 0.5,
               pinned: true,
               backgroundColor: Colors.white,
@@ -83,16 +98,25 @@ class _ListScreenState extends State<ListScreen> {
                 titlePadding: EdgeInsets.all(0.0),
               ),
             ),
+            SliverAppBar(
+              toolbarHeight: 70,
+              primary: true,
+              pinned: true,
+              brightness: Brightness.light,
+              elevation: 0.0,
+              flexibleSpace: buildSearch(),
+            ),
+            // buildSearch(),
             renderSliverList()
           ],
         ),
         floatingActionButton: FloatingActionButton(
-          backgroundColor: Color(0XFFFFD74A),
+          backgroundColor: colorFFD74A,
           child: Icon(
-            Icons.note_add,
+            Icons.edit,
           ),
           onPressed: () {
-            Get.to(() => ListForm());
+            Get.to(() => ListAddScreen());
           },
         ),
       ),
@@ -137,10 +161,8 @@ class _ListScreenState extends State<ListScreen> {
       elevation: 0,
       actions: [
         IconButton(
-          icon: Icon(Icons.search),
-          onPressed: () {
-            showSearch(context: context, delegate: YamListSearch());
-          },
+          icon: Icon(Icons.filter_alt),
+          onPressed: () {},
         ),
       ],
     );
@@ -155,7 +177,7 @@ class _ListScreenState extends State<ListScreen> {
               height: 1,
             ),
             SlidableWidget(
-              child: buildListTile(items[index]),
+              child: buildListTile(mylist[index]),
               onDismissed: (action) {
                 print(action); //스와이프액션
                 return dismissSlidableItem(context, index, action);
@@ -163,18 +185,38 @@ class _ListScreenState extends State<ListScreen> {
             ),
             Divider(
               height: 1,
+              color: colorEEEEEE,
             )
           ],
         );
-      }, childCount: items.length),
+      }, childCount: mylist.length),
     );
+  }
+
+  Widget buildSearch() => SearchWidget(
+        text: query,
+        hintText: "Search",
+        onChanged: searchMyList,
+      );
+
+  void searchMyList(String query) {
+    final list = allRestaurants.where((list) {
+      final titleLower = list.title.toLowerCase();
+      final searchLower = query.toLowerCase();
+      return titleLower.contains(searchLower);
+    }).toList();
+
+    setState(() {
+      this.query = query;
+      this.mylist = list;
+    });
   }
 
   Widget _bodyWidget() {
     return ListView.separated(
       itemBuilder: (BuildContext context, int index) {
         return SlidableWidget(
-          child: buildListTile(items[index]),
+          child: buildListTile(mylist[index]),
           onDismissed: (action) {
             print(action); //스와이프액션
             return dismissSlidableItem(context, index, action);
@@ -183,11 +225,11 @@ class _ListScreenState extends State<ListScreen> {
       },
       separatorBuilder: (context, index) {
         return Divider(
-          color: Colors.grey,
-          height: 0,
+          color: colorEEEEEE,
+          height: 1,
         );
       },
-      itemCount: items.length,
+      itemCount: mylist.length,
     );
   }
 
@@ -195,8 +237,8 @@ class _ListScreenState extends State<ListScreen> {
       BuildContext context, int index, SlidableAction action) {
     switch (action) {
       case SlidableAction.comment:
-        print(items[index]);
-        Get.to(() => ReviewWriteScreen(postKey: items[index]));
+        print(mylist[index]);
+        Get.to(() => ReviewWriteScreen(postKey: mylist[index].title));
         break;
       case SlidableAction.delete:
         Get.snackbar("삭제", "완료", snackPosition: SnackPosition.BOTTOM);
@@ -209,9 +251,82 @@ class _ListScreenState extends State<ListScreen> {
         onTap: () {
           print(item);
         },
+        title: Text(
+          item.title,
+          style: TextStyle(
+            fontFamily: "NotoSans-Regular",
+            fontSize: 18,
+            color: color202020,
+          ),
+        ),
         tileColor: Colors.white,
-        leading: Icon(Icons.circle),
-        subtitle: Text(item),
+        leading: Icon(
+          Icons.food_bank_outlined,
+          size: 35,
+          color: colorFFD74A,
+        ),
+        subtitle: Column(
+          children: [
+            Row(
+              children: [
+                Text(
+                  item.title,
+                  style: TextStyle(
+                    fontFamily: "NotoSans-Regular",
+                    fontSize: 14,
+                    color: colorD9D9D9,
+                  ),
+                ),
+                Text(
+                  " | ",
+                  style: TextStyle(
+                    fontFamily: "NotoSans-Regular",
+                    fontSize: 14,
+                    color: colorD9D9D9,
+                  ),
+                ),
+                Text(
+                  "3.2km",
+                  style: TextStyle(
+                    fontFamily: "NotoSans-Regular",
+                    fontSize: 14,
+                    color: colorD9D9D9,
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Text(
+                  "#계절과일 ",
+                  style: TextStyle(
+                    fontFamily: "NotoSans-Regular",
+                    fontSize: 14,
+                    color: color696969,
+                  ),
+                ),
+                Text(
+                  "#배달쌉가능 ",
+                  style: TextStyle(
+                    fontFamily: "NotoSans-Regular",
+                    fontSize: 14,
+                    color: color696969,
+                  ),
+                )
+              ],
+            )
+          ],
+        ),
+        trailing: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Icon(
+              Icons.warning,
+              size: 20,
+              color: colorFFD74A,
+            ),
+          ],
+        ),
       ),
     );
   }

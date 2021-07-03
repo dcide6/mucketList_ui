@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:mklistui/constants/color.dart';
 
 enum SlidableAction { comment, delete }
 
@@ -18,8 +19,7 @@ class SlidableWidget<T> extends StatelessWidget {
       actions: [
         IconSlideAction(
           caption: '후기얌',
-          color: Colors.yellow,
-          icon: Icons.check,
+          color: colorFFD74A,
           onTap: () {
             return onDismissed(SlidableAction.comment);
           },
@@ -28,8 +28,7 @@ class SlidableWidget<T> extends StatelessWidget {
       secondaryActions: [
         IconSlideAction(
           caption: '별로얌',
-          color: Colors.redAccent,
-          icon: Icons.delete_forever,
+          color: colorFF3535,
           onTap: () {
             return onDismissed(SlidableAction.delete);
           },

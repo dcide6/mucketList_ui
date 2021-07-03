@@ -30,7 +30,7 @@ class SikdangApi {
     final response = await http.get(
       url,
       headers: {
-        HttpHeaders.authorizationHeader: "",
+        HttpHeaders.authorizationHeader: "KakaoAK //",
       },
     );
     print(response.statusCode);
