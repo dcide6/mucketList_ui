@@ -1,23 +1,19 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/get_navigation.dart';
-import 'package:intl/intl.dart';
 import 'package:mklistui/constants/color.dart';
 import 'package:mklistui/constants/screen_size.dart';
-import 'package:mklistui/models/restaurant.dart';
-import 'package:mklistui/models/restaurant_fake_data.dart';
+import 'package:mklistui/controllers/yam_list_controller.dart';
+import 'package:mklistui/models/yam_list_model.dart';
 import 'package:mklistui/screens/review_write_screen.dart';
-import 'package:mklistui/screens/yamlist_search_screen.dart';
+import 'package:mklistui/widgets/custom_alert_dialog.dart';
 import 'package:mklistui/widgets/home_flexiable_appbar.dart';
+import 'package:mklistui/widgets/list_filter_dialog.dart';
 import 'package:mklistui/widgets/list_form.dart';
-import 'package:mklistui/widgets/mylist_card.dart';
 import 'package:mklistui/widgets/random_pick_dialog.dart';
 import 'package:mklistui/widgets/search_widget.dart';
-import 'package:mklistui/widgets/slidable_widget.dart';
-
 import 'list_add_screen.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class ListScreen extends StatefulWidget {
   @override
@@ -25,33 +21,17 @@ class ListScreen extends StatefulWidget {
 }
 
 class _ListScreenState extends State<ListScreen> {
+  final YamListController _yamListController = Get.put(YamListController());
+  List showList = [];
   static List<String> menu = ['얌얌리스트', '얌얌완료'];
-  List<Restaurant> mylist = [];
+  bool searchBarOpened = false;
   String query = '';
   String currentMenu = menu[0];
-  // List items = [
-  //   'Orange',
-  //   'Grape',
-  //   'Carrot',
-  //   'Apple',
-  //   'Watermelon',
-  //   'Orange',
-  //   'Grape',
-  //   'Carrot',
-  //   'Apple',
-  //   'Watermelon',
-  //   'Watermelon',
-  //   'Orange',
-  //   'Grape',
-  //   'Carrot',
-  //   'Apple',
-  //   'WatermelonL'
-  // ];
   String _selectedMenu = menu[0];
   @override
   void initState() {
     // TODO: implement initState
-    mylist = allRestaurants;
+    showList = _yamListController.mylist;
   }
 
   @override
@@ -61,22 +41,24 @@ class _ListScreenState extends State<ListScreen> {
         // appBar: _buildAppBar(),
         body: CustomScrollView(
           slivers: [
-            SliverAppBar(
-              elevation: 0.5,
-              expandedHeight: size.height / 2.3,
-              flexibleSpace: FlexibleSpaceBar(
-                background: Stack(
-                  children: [
-                    Positioned.fill(
-                        child: Image.asset(
-                      "assets/bg2.jpg",
-                      fit: BoxFit.cover,
-                    )),
-                    HomeFlexibleAppBar(),
-                  ],
-                ),
-              ),
-            ),
+            searchBarOpened
+                ? SliverPadding(padding: EdgeInsets.all(0))
+                : SliverAppBar(
+                    elevation: 0.5,
+                    expandedHeight: size.height / 2.3,
+                    flexibleSpace: FlexibleSpaceBar(
+                      background: Stack(
+                        children: [
+                          Positioned.fill(
+                              child: Image.asset(
+                            "assets/images/bg2_fixed.jpg",
+                            fit: BoxFit.cover,
+                          )),
+                          HomeFlexibleAppBar(),
+                        ],
+                      ),
+                    ),
+                  ),
             SliverAppBar(
               toolbarHeight: 15,
               primary: false,
@@ -89,7 +71,7 @@ class _ListScreenState extends State<ListScreen> {
               ),
             ),
             SliverAppBar(
-              toolbarHeight: 30,
+              toolbarHeight: 50,
               elevation: 0.5,
               pinned: true,
               backgroundColor: Colors.white,
@@ -107,14 +89,12 @@ class _ListScreenState extends State<ListScreen> {
               flexibleSpace: buildSearch(),
             ),
             // buildSearch(),
-            renderSliverList()
+            Obx(() => renderSliverList()),
           ],
         ),
         floatingActionButton: FloatingActionButton(
           backgroundColor: colorFFD74A,
-          child: Icon(
-            Icons.edit,
-          ),
+          child: SvgPicture.asset("assets/icons/FB.svg"),
           onPressed: () {
             Get.to(() => ListAddScreen());
           },
@@ -150,10 +130,10 @@ class _ListScreenState extends State<ListScreen> {
                 currentMenu,
                 style: TextStyle(fontSize: 20.0),
               ),
-              Icon(
-                Icons.arrow_drop_down_outlined,
-                size: 30,
+              SizedBox(
+                width: 10,
               ),
+              SvgPicture.asset("assets/icons/Dropdown.svg"),
             ],
           ),
         ),
@@ -161,8 +141,19 @@ class _ListScreenState extends State<ListScreen> {
       elevation: 0,
       actions: [
         IconButton(
-          icon: Icon(Icons.filter_alt),
-          onPressed: () {},
+          icon: SvgPicture.asset("assets/icons/Filter icon N.svg"),
+          onPressed: () {
+            listFilterDialog(context, {
+              'region1': '서울시',
+              'region2': '동작구',
+              'category': '양식',
+              'tags': '맛있는'
+            }).then((Map<String, dynamic> filters) {
+              setState(() {
+                print(filters['category']);
+              });
+            });
+          },
         ),
       ],
     );
@@ -176,83 +167,53 @@ class _ListScreenState extends State<ListScreen> {
             Divider(
               height: 1,
             ),
-            SlidableWidget(
-              child: buildListTile(mylist[index]),
-              onDismissed: (action) {
-                print(action); //스와이프액션
-                return dismissSlidableItem(context, index, action);
-              },
-            ),
+            buildListTile(showList[index], index),
             Divider(
               height: 1,
               color: colorEEEEEE,
             )
           ],
         );
-      }, childCount: mylist.length),
+      }, childCount: showList.length),
     );
   }
 
-  Widget buildSearch() => SearchWidget(
-        text: query,
-        hintText: "Search",
-        onChanged: searchMyList,
-      );
+  Widget buildSearch() {
+    searchBarOpened = true;
+    void searchBarOn() {
+      searchBarOpened = false;
+    }
+
+    return SearchWidget(
+      text: query,
+      hintText: "Search",
+      onChanged: searchMyList,
+      searchBarOn: searchBarOn,
+    );
+  }
 
   void searchMyList(String query) {
-    final list = allRestaurants.where((list) {
-      final titleLower = list.title.toLowerCase();
+    final searchList = _yamListController.mylist.where((list) {
+      final titleLower = list.name.toLowerCase();
       final searchLower = query.toLowerCase();
       return titleLower.contains(searchLower);
     }).toList();
 
     setState(() {
       this.query = query;
-      this.mylist = list;
+      this.showList = searchList;
     });
   }
 
-  Widget _bodyWidget() {
-    return ListView.separated(
-      itemBuilder: (BuildContext context, int index) {
-        return SlidableWidget(
-          child: buildListTile(mylist[index]),
-          onDismissed: (action) {
-            print(action); //스와이프액션
-            return dismissSlidableItem(context, index, action);
-          },
-        );
-      },
-      separatorBuilder: (context, index) {
-        return Divider(
-          color: colorEEEEEE,
-          height: 1,
-        );
-      },
-      itemCount: mylist.length,
-    );
-  }
-
-  void dismissSlidableItem(
-      BuildContext context, int index, SlidableAction action) {
-    switch (action) {
-      case SlidableAction.comment:
-        print(mylist[index]);
-        Get.to(() => ReviewWriteScreen(postKey: mylist[index].title));
-        break;
-      case SlidableAction.delete:
-        Get.snackbar("삭제", "완료", snackPosition: SnackPosition.BOTTOM);
-    }
-  }
-
-  Widget buildListTile(item) {
+  Widget buildListTile(item, index) {
     return Container(
       child: ListTile(
         onTap: () {
-          print(item);
+          print(item.id);
+          Get.to(() => ReviewWriteScreen(id: item.id));
         },
         title: Text(
-          item.title,
+          item.name,
           style: TextStyle(
             fontFamily: "NotoSans-Regular",
             fontSize: 18,
@@ -260,17 +221,13 @@ class _ListScreenState extends State<ListScreen> {
           ),
         ),
         tileColor: Colors.white,
-        leading: Icon(
-          Icons.food_bank_outlined,
-          size: 35,
-          color: colorFFD74A,
-        ),
+        leading: foodsIconReturn(item.category2depth),
         subtitle: Column(
           children: [
             Row(
               children: [
                 Text(
-                  item.title,
+                  item.region1depth,
                   style: TextStyle(
                     fontFamily: "NotoSans-Regular",
                     fontSize: 14,
@@ -331,28 +288,31 @@ class _ListScreenState extends State<ListScreen> {
     );
   }
 
-  Widget buildCard() {
-    return Padding(
-      padding: const EdgeInsets.all(32.0), // 카드 바깥에 패딩
-      child: Card(
-        shadowColor: Colors.grey,
-        elevation: 3,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        color: Colors.yellow[200],
-        child: Container(
-          width: size.width,
-          child: Padding(
-            padding: const EdgeInsets.all(30.0),
-            child: MyListCard(
-              listDescription: "이 구역 맛집을 아는",
-              listGrade: "얌얌박사",
-            ),
-          ),
-        ),
-      ),
-    );
+  SvgPicture foodsIconReturn(String category) {
+    switch (category) {
+      case "디저트":
+        return SvgPicture.asset("assets/images/foods/디저트.svg");
+      case "분식":
+        return SvgPicture.asset("assets/images/foods/분식.svg");
+      case "술집":
+        return SvgPicture.asset("assets/images/foods/술집.svg");
+      case "아시아음식":
+        return SvgPicture.asset("assets/images/foods/아시아음식.svg");
+      case "양식":
+        return SvgPicture.asset("assets/images/foods/양식.svg");
+      case "일식":
+        return SvgPicture.asset("assets/images/foods/일식.svg");
+      case "중식":
+        return SvgPicture.asset("assets/images/foods/중식.svg");
+      case "치킨":
+        return SvgPicture.asset("assets/images/foods/치킨.svg");
+      case "카페":
+        return SvgPicture.asset("assets/images/foods/카페.svg");
+      case "한식":
+        return SvgPicture.asset("assets/images/foods/한식.svg");
+      default:
+        return SvgPicture.asset("assets/images/foods/기타.svg");
+    }
   }
 
   Widget buildDropdown() {

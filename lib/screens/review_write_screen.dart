@@ -1,18 +1,23 @@
 import 'dart:io';
 import 'package:app_settings/app_settings.dart';
+import 'package:dio/dio.dart' as dio;
+import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mklistui/constants/color.dart';
 import 'package:mklistui/constants/screen_size.dart';
+import 'package:mklistui/controllers/yam_list_controller.dart';
 import 'package:mklistui/screens/camera_screen.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:intl/intl.dart';
+import 'package:http_parser/http_parser.dart';
 
 class ReviewWriteScreen extends StatefulWidget {
   final File imageFile;
-  final String postKey;
-  const ReviewWriteScreen({Key key, @required this.postKey, this.imageFile})
+  final int id;
+
+  const ReviewWriteScreen({Key key, @required this.id, this.imageFile})
       : super(key: key);
 
   @override
@@ -20,26 +25,33 @@ class ReviewWriteScreen extends StatefulWidget {
 }
 
 class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
+  YamListController _yamListController = Get.find<YamListController>();
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   TextEditingController _visitingDateController = TextEditingController();
-  TextEditingController _visitingTimeController = TextEditingController();
-  TextEditingController _visitingWithwhoController = TextEditingController();
-  TextEditingController _reviewController = TextEditingController();
+  TextEditingController _mealTimeController = TextEditingController();
+  TextEditingController _companyController = TextEditingController();
+  TextEditingController _commentController = TextEditingController();
+  bool shared = false;
+  String mealTime;
+  String company;
   DateTime _selectedDate;
   File _uploadFile;
+
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
     _visitingDateController.dispose();
     _visitingDateController.dispose();
-    _visitingTimeController.dispose();
-    _visitingWithwhoController.dispose();
-    _reviewController.dispose();
+    _mealTimeController.dispose();
+    _companyController.dispose();
+    _commentController.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final index = _yamListController.mylist
+        .indexWhere((element) => element.id == widget.id);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -51,7 +63,31 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
         child: ListView(
           children: [
             Container(
-              height: size.height / 6,
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      _yamListController.mylist[index].name,
+                      style: TextStyle(fontSize: 22),
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    Text(
+                      _yamListController.mylist[index].category2depth,
+                      style: TextStyle(fontSize: 14, color: color696969),
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                  ],
+                ),
+              ),
             ),
             Divider(
               color: Colors.grey[200],
@@ -111,7 +147,7 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
                     child: TextFormField(
                       showCursor: true,
                       readOnly: true,
-                      controller: _visitingTimeController,
+                      controller: _mealTimeController,
                       onTap: () {
                         _showBottomSheet();
                       },
@@ -141,7 +177,7 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
                     child: TextFormField(
                       showCursor: true,
                       readOnly: true,
-                      controller: _visitingWithwhoController,
+                      controller: _companyController,
                       onTap: () {
                         print("ontap");
                         _showBottomScrollSheet();
@@ -159,7 +195,7 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
               child: Container(
                 child: TextField(
                   textAlign: TextAlign.start,
-                  controller: _reviewController,
+                  controller: _commentController,
                   decoration: InputDecoration(
                     contentPadding:
                         const EdgeInsets.fromLTRB(10.0, 70.0, 10.0, 20.0),
@@ -250,7 +286,26 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
             SizedBox(
               height: 5,
             ),
-            SectionSwitch('공개 여부'),
+            // SectionSwitch('공개 여부'),
+            ListTile(
+              title: Text(
+                '공개여부',
+                style: TextStyle(
+                  fontFamily: "NotoSans-Regular",
+                  fontSize: 16,
+                  color: color202020,
+                ),
+              ),
+              trailing: Switch(
+                activeColor: colorFFD74A,
+                value: shared,
+                onChanged: (onValue) {
+                  setState(() {
+                    shared = onValue;
+                  });
+                },
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Text(
@@ -270,7 +325,27 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
               height: 55,
               child: MaterialButton(
                 color: colorFFD74A,
-                onPressed: () {},
+                onPressed: () async {
+                  String userToken;
+                  //후기요청 날려본 것인데 포스트맨에서는 되는데 왜 안되는지 모르겠음...
+                  var dioRequest = dio.Dio();
+                  dioRequest.options.headers['x-auth-token'] = userToken;
+                  String url = 'http://yam-stack.com/api/v1/review';
+                  Map data = {
+                    "comment": "좋아요",
+                    "company": "2",
+                    "yam": {"id": "81"},
+                    "visitTime": "2021-07-08",
+                    "shared": true,
+                    "mealTime": "1"
+                  };
+                  var formData = dio.FormData.fromMap({
+                    'reviewdata': data,
+                    'image': await dio.MultipartFile.fromFile(_uploadFile.path)
+                  });
+                  var response = await dioRequest.post(url, data: formData);
+                  print(response.statusCode);
+                },
                 child: Text('작성완료'),
               ),
             ),
@@ -286,6 +361,7 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
       print(pic);
       setState(() {
         _uploadFile = pic;
+        print(_uploadFile);
       });
     } else {
       Get.defaultDialog(
@@ -339,8 +415,11 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
         return;
       }
       setState(() {
+        String languageCode = Localizations.localeOf(context).languageCode;
         _selectedDate = pickedDate;
-        _visitingDateController.text = DateFormat.yMd().format(_selectedDate);
+        print(_selectedDate);
+        _visitingDateController.text =
+            DateFormat.yMMMMEEEEd(languageCode).format(_selectedDate);
       });
     });
   }
@@ -380,7 +459,8 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
               ),
               onTap: () {
                 setState(() {
-                  _visitingTimeController.text = "아침";
+                  _mealTimeController.text = "아침";
+                  mealTime = "0";
                 });
                 Get.back();
               },
@@ -391,8 +471,11 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
                 style: TextStyle(color: color202020),
               ),
               onTap: () {
-                _visitingTimeController.text = "점심";
-                Get.back();
+                setState(() {
+                  _mealTimeController.text = "점심";
+                  mealTime = "1";
+                  Get.back();
+                });
               },
             ),
             ListTile(
@@ -401,8 +484,11 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
                 style: TextStyle(color: color202020),
               ),
               onTap: () {
-                _visitingTimeController.text = "저녁";
-                Get.back();
+                setState(() {
+                  _mealTimeController.text = "저녁";
+                  mealTime = "2";
+                  Get.back();
+                });
               },
             ),
             Container(
@@ -475,7 +561,8 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
                   ),
                   onTap: () {
                     setState(() {
-                      _visitingWithwhoController.text = "혼자";
+                      _companyController.text = "혼자";
+                      company = "0";
                     });
                     Get.back();
                   },
@@ -486,7 +573,11 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
                     style: TextStyle(color: color202020),
                   ),
                   onTap: () {
-                    _visitingWithwhoController.text = "연인";
+                    setState(() {
+                      _companyController.text = "연인";
+                      company = "1";
+                    });
+
                     Get.back();
                   },
                 ),
@@ -496,7 +587,11 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
                     style: TextStyle(color: color202020),
                   ),
                   onTap: () {
-                    _visitingWithwhoController.text = "가족";
+                    setState(() {
+                      _companyController.text = "가족";
+                      company = "2";
+                    });
+
                     Get.back();
                   },
                 ),
@@ -506,7 +601,11 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
                     style: TextStyle(color: color202020),
                   ),
                   onTap: () {
-                    _visitingWithwhoController.text = "친구";
+                    setState(() {
+                      _companyController.text = "친구";
+                      company = "3";
+                    });
+
                     Get.back();
                   },
                 ),
@@ -516,7 +615,11 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
                     style: TextStyle(color: color202020),
                   ),
                   onTap: () {
-                    _visitingWithwhoController.text = "회식";
+                    setState(() {
+                      _companyController.text = "회식";
+                      company = "4";
+                    });
+
                     Get.back();
                   },
                 ),
@@ -526,7 +629,11 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
                     style: TextStyle(color: color202020),
                   ),
                   onTap: () {
-                    _visitingWithwhoController.text = "소개팅";
+                    setState(() {
+                      _companyController.text = "소개팅";
+                      company = "5";
+                    });
+
                     Get.back();
                   },
                 ),
@@ -536,7 +643,11 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
                     style: TextStyle(color: color202020),
                   ),
                   onTap: () {
-                    _visitingWithwhoController.text = "회사미팅";
+                    setState(() {
+                      _companyController.text = "회사미팅";
+                      company = "6";
+                    });
+
                     Get.back();
                   },
                 ),
@@ -573,43 +684,4 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
           ],
         ),
       );
-}
-
-class SectionSwitch extends StatefulWidget {
-  final String _title;
-  const SectionSwitch(
-    this._title, {
-    Key key,
-  }) : super(key: key);
-
-  @override
-  _SectionSwitchState createState() => _SectionSwitchState();
-}
-
-class _SectionSwitchState extends State<SectionSwitch> {
-  bool checked = false;
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(
-        widget._title,
-        style: TextStyle(
-          fontFamily: "NotoSans-Regular",
-          fontSize: 16,
-          color: color202020,
-        ),
-      ),
-      trailing: Switch(
-        activeColor: colorFFD74A,
-        value: checked,
-        onChanged: (onValue) {
-          setState(() {
-            checked = onValue;
-          });
-        },
-      ),
-      dense: true,
-      contentPadding: EdgeInsets.symmetric(horizontal: 20),
-    );
-  }
 }

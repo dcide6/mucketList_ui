@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tags/flutter_tags.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:mklistui/models/sikdang_model.dart';
+import 'package:mklistui/models/kakao_list_model.dart';
 
 class ListForm extends StatefulWidget {
   @override
@@ -50,7 +50,7 @@ class _ListFormState extends State<ListForm> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   TextButton(onPressed: () {}, child: Text("찾는 식당이 없나요?")),
-                  TypeAheadField<Sikdang>(
+                  TypeAheadField<KakaoListModel>(
                     debounceDuration: Duration(milliseconds: 500),
                     textFieldConfiguration: TextFieldConfiguration(
                         decoration: InputDecoration(
@@ -58,7 +58,8 @@ class _ListFormState extends State<ListForm> {
                       border: OutlineInputBorder(),
                       hintText: '식당 검색',
                     )),
-                    suggestionsCallback: SikdangApi.getSikdangSuggestions,
+                    suggestionsCallback:
+                        KakaoListModelApi.getKakaoListModelSuggestions,
                     itemBuilder: (context, suggestion) {
                       return Column(
                         children: [
@@ -77,9 +78,9 @@ class _ListFormState extends State<ListForm> {
                         ),
                       ),
                     ),
-                    onSuggestionSelected: (Sikdang suggestion) {
-                      final sikdang = suggestion;
-                      print(sikdang.place_name);
+                    onSuggestionSelected: (KakaoListModel suggestion) {
+                      final chosenList = suggestion;
+                      print(chosenList.place_name);
                     },
                   ),
                 ],

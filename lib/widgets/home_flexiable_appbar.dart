@@ -71,6 +71,7 @@ class HomeFlexibleAppBar extends StatelessWidget {
                           child: ClipRRect(
                             borderRadius: BorderRadius.all(Radius.circular(14)),
                             child: LinearProgressIndicator(
+                              color: colorFFD74A,
                               value: 0.5,
                               backgroundColor: Colors.grey[200],
                             ),
