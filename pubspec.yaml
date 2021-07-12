@@ -47,6 +47,7 @@ dependencies:
   intl: ^0.17.0
   dio: ^4.0.0
   flutter_svg: ^0.22.0
+  mime: ^1.0.0
 
 
 dev_dependencies:

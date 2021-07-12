@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:app_settings/app_settings.dart';
 import 'package:dio/dio.dart' as dio;
+import 'package:dio/dio.dart';
+import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +14,7 @@ import 'package:mklistui/screens/camera_screen.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:intl/intl.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:mime/mime.dart' as mimeManager;
 
 class ReviewWriteScreen extends StatefulWidget {
   final File imageFile;
@@ -326,25 +329,61 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
               child: MaterialButton(
                 color: colorFFD74A,
                 onPressed: () async {
+                  ///안돼는부분///
                   String userToken;
-                  //후기요청 날려본 것인데 포스트맨에서는 되는데 왜 안되는지 모르겠음...
-                  var dioRequest = dio.Dio();
-                  dioRequest.options.headers['x-auth-token'] = userToken;
                   String url = 'http://yam-stack.com/api/v1/review';
-                  Map data = {
-                    "comment": "좋아요",
+                  var headers = {
+                    'Content-Type': 'multipart/form-​data',
+                    'x-auth-token': userToken,
+                  };
+                  var request = http.MultipartRequest('POST', Uri.parse(url));
+                  var data = {
+                    "comment": "very good",
                     "company": "2",
                     "yam": {"id": "81"},
                     "visitTime": "2021-07-08",
                     "shared": true,
                     "mealTime": "1"
                   };
-                  var formData = dio.FormData.fromMap({
-                    'reviewdata': data,
-                    'image': await dio.MultipartFile.fromFile(_uploadFile.path)
-                  });
-                  var response = await dioRequest.post(url, data: formData);
+                  var sendData = json.encode(data);
+                  request.fields.addAll({'reviewdata': sendData});
+                  print(_uploadFile.path);
+                  request.files.add(await http.MultipartFile.fromPath(
+                      'image', _uploadFile.path));
+                  request.headers.addAll(headers);
+                  http.StreamedResponse response = await request.send();
                   print(response.statusCode);
+                  if (response.statusCode == 200) {
+                    print(await response.stream.bytesToString());
+                  } else {
+                    print(response.reasonPhrase);
+                  }
+                  // Options options = Options(
+                  //     contentType:
+                  //         ContentType.parse('application/json').toString());
+                  //
+                  // String userToken;
+                  // //후기요청 날려본 것인데 포스트맨에서는 되는데 왜 안되는지 모르겠음...
+                  // var dioRequest = dio.Dio();
+                  //
+                  // dioRequest.options.headers['x-auth-token'] =
+                  //     'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzMzM4MndhdGVyQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiZXhwIjoxNjI2MDYxMDM4fQ.v0mbLLSUlBc9E0SbFI8Bx9qu8kUn6-uwQ1t0o4pjMqI';
+                  // dioRequest.options.headers["accept"] = "application/json";
+                  //
+                  // String url = 'http://yam-stack.com/api/v1/review';
+                  // // var yam = {"id": "81"};
+
+                  // print(json.encode(data));
+                  // var formData = dio.FormData.fromMap({
+                  //   'reviewdata': json.encode(data),
+                  //   'image': await dio.MultipartFile.fromFile(_uploadFile.path,
+                  //       contentType: MediaType('image',
+                  //           mimeManager.lookupMimeType(_uploadFile.path)))
+                  // });
+                  // print(formData);
+                  // var response = await dioRequest.post(url,
+                  //     data: formData, options: options);
+                  // print(response.statusCode);
                 },
                 child: Text('작성완료'),
               ),

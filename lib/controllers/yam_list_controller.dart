@@ -9,7 +9,7 @@ class YamListController extends GetxController {
     String userToken;
     Dio dio = new Dio();
     dio.options.headers['content-Type'] = 'application/json';
-    dio.options.headers['x-auth-token'] = userToken; // 사용자 토큰 입력
+    dio.options.headers['x-auth-token'] = userToken;
     String url =
         'http://yam-stack.com/api/v1/yam?page=0&size=50&direction=DESC';
     var response = await dio.post(
