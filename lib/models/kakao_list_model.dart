@@ -62,7 +62,8 @@ class KakaoListModelApi {
     final response = await http.get(
       url,
       headers: {
-        HttpHeaders.authorizationHeader: "KakaoAK",
+        HttpHeaders.authorizationHeader:
+            "KakaoAK a6097c6ae102a0f29156a7bd2d373c92",
       },
     );
     print(response.statusCode);

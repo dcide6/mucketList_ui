@@ -330,7 +330,8 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
                 color: colorFFD74A,
                 onPressed: () async {
                   ///안돼는부분///
-                  String userToken;
+                  String userToken =
+                      'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzMzM4MndhdGVyQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiZXhwIjoxNjI2MDk5MjMyfQ.VHubFeXfpzjYQwnNfbZdFZOnlnFCluh8Bszeb_JOwcs';
                   String url = 'http://yam-stack.com/api/v1/review';
                   var headers = {
                     'Content-Type': 'multipart/form-​data',

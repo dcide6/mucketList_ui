@@ -6,7 +6,8 @@ class YamListController extends GetxController {
   var mylist = List<YamListModel>().obs;
 
   Future<List<YamListModel>> getAllYamList() async {
-    String userToken;
+    String userToken =
+        'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzMzM4MndhdGVyQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiZXhwIjoxNjI2MDk5MjMyfQ.VHubFeXfpzjYQwnNfbZdFZOnlnFCluh8Bszeb_JOwcs';
     Dio dio = new Dio();
     dio.options.headers['content-Type'] = 'application/json';
     dio.options.headers['x-auth-token'] = userToken;

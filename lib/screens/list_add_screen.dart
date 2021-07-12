@@ -364,7 +364,8 @@ class _ListAddScreenState extends State<ListAddScreen> {
               child: MaterialButton(
                 color: colorFFD74A,
                 onPressed: () async {
-                  String userToken;
+                  String userToken =
+                      'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzMzM4MndhdGVyQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiZXhwIjoxNjI2MDk5MjMyfQ.VHubFeXfpzjYQwnNfbZdFZOnlnFCluh8Bszeb_JOwcs';
                   Dio dio = new Dio();
                   dio.options.headers['content-Type'] = 'application/json';
                   dio.options.headers['x-auth-token'] = userToken;
@@ -402,6 +403,7 @@ class _ListAddScreenState extends State<ListAddScreen> {
                         foods: _foodtags,
                         tags: _tags,
                         memo: _memoController.text));
+                    Get.back();
                   }
                 },
                 child: Text('저장'),
