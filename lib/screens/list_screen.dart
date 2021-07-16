@@ -1,16 +1,19 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/get_navigation.dart';
+import 'package:mklistui/constants/color.dart';
 import 'package:mklistui/constants/screen_size.dart';
+import 'package:mklistui/controllers/yam_list_controller.dart';
+import 'package:mklistui/models/yam_list_model.dart';
 import 'package:mklistui/screens/review_write_screen.dart';
-import 'package:mklistui/screens/yamlist_search_screen.dart';
+import 'package:mklistui/widgets/custom_alert_dialog.dart';
 import 'package:mklistui/widgets/home_flexiable_appbar.dart';
+import 'package:mklistui/widgets/list_filter_dialog.dart';
 import 'package:mklistui/widgets/list_form.dart';
-import 'package:mklistui/widgets/mylist_card.dart';
 import 'package:mklistui/widgets/random_pick_dialog.dart';
-import 'package:mklistui/widgets/slidable_widget.dart';
+import 'package:mklistui/widgets/search_widget.dart';
+import 'list_add_screen.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class ListScreen extends StatefulWidget {
   @override
@@ -18,28 +21,19 @@ class ListScreen extends StatefulWidget {
 }
 
 class _ListScreenState extends State<ListScreen> {
+  final YamListController _yamListController = Get.put(YamListController());
+  List showList = [];
   static List<String> menu = ['얌얌리스트', '얌얌완료'];
+  bool searchBarOpened = false;
+  String query = '';
   String currentMenu = menu[0];
-  List items = [
-    'Orange',
-    'Grape',
-    'Carrot',
-    'Apple',
-    'Watermelon',
-    'Orange',
-    'Grape',
-    'Carrot',
-    'Apple',
-    'Watermelon',
-    'Watermelon',
-    'Orange',
-    'Grape',
-    'Carrot',
-    'Apple',
-    'WatermelonL'
-  ];
-
   String _selectedMenu = menu[0];
+  @override
+  void initState() {
+    // TODO: implement initState
+    showList = _yamListController.mylist;
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -47,24 +41,26 @@ class _ListScreenState extends State<ListScreen> {
         // appBar: _buildAppBar(),
         body: CustomScrollView(
           slivers: [
+            searchBarOpened
+                ? SliverPadding(padding: EdgeInsets.all(0))
+                : SliverAppBar(
+                    elevation: 0.5,
+                    expandedHeight: size.height / 2.3,
+                    flexibleSpace: FlexibleSpaceBar(
+                      background: Stack(
+                        children: [
+                          Positioned.fill(
+                              child: Image.asset(
+                            "assets/images/bg2_fixed.jpg",
+                            fit: BoxFit.cover,
+                          )),
+                          HomeFlexibleAppBar(),
+                        ],
+                      ),
+                    ),
+                  ),
             SliverAppBar(
-              elevation: 0.5,
-              expandedHeight: 350.0,
-              flexibleSpace: FlexibleSpaceBar(
-                background: Stack(
-                  children: [
-                    Positioned.fill(
-                        child: Image.asset(
-                      "assets/bg2.jpg",
-                      fit: BoxFit.cover,
-                    )),
-                    HomeFlexibleAppBar(),
-                  ],
-                ),
-              ),
-            ),
-            SliverAppBar(
-              toolbarHeight: 10,
+              toolbarHeight: 15,
               primary: false,
               floating: false,
               pinned: true,
@@ -75,6 +71,7 @@ class _ListScreenState extends State<ListScreen> {
               ),
             ),
             SliverAppBar(
+              toolbarHeight: 50,
               elevation: 0.5,
               pinned: true,
               backgroundColor: Colors.white,
@@ -83,16 +80,23 @@ class _ListScreenState extends State<ListScreen> {
                 titlePadding: EdgeInsets.all(0.0),
               ),
             ),
-            renderSliverList()
+            SliverAppBar(
+              toolbarHeight: 70,
+              primary: true,
+              pinned: true,
+              brightness: Brightness.light,
+              elevation: 0.0,
+              flexibleSpace: buildSearch(),
+            ),
+            // buildSearch(),
+            Obx(() => renderSliverList()),
           ],
         ),
         floatingActionButton: FloatingActionButton(
-          backgroundColor: Color(0XFFFFD74A),
-          child: Icon(
-            Icons.note_add,
-          ),
+          backgroundColor: colorFFD74A,
+          child: SvgPicture.asset("assets/icons/FB.svg"),
           onPressed: () {
-            Get.to(() => ListForm());
+            Get.to(() => ListAddScreen());
           },
         ),
       ),
@@ -126,10 +130,10 @@ class _ListScreenState extends State<ListScreen> {
                 currentMenu,
                 style: TextStyle(fontSize: 20.0),
               ),
-              Icon(
-                Icons.arrow_drop_down_outlined,
-                size: 30,
+              SizedBox(
+                width: 10,
               ),
+              SvgPicture.asset("assets/icons/Dropdown.svg"),
             ],
           ),
         ),
@@ -137,9 +141,18 @@ class _ListScreenState extends State<ListScreen> {
       elevation: 0,
       actions: [
         IconButton(
-          icon: Icon(Icons.search),
+          icon: SvgPicture.asset("assets/icons/Filter icon N.svg"),
           onPressed: () {
-            showSearch(context: context, delegate: YamListSearch());
+            listFilterDialog(context, {
+              'region1': '서울시',
+              'region2': '동작구',
+              'category': '양식',
+              'tags': '맛있는'
+            }).then((Map<String, dynamic> filters) {
+              setState(() {
+                print(filters['category']);
+              });
+            });
           },
         ),
       ],
@@ -154,90 +167,152 @@ class _ListScreenState extends State<ListScreen> {
             Divider(
               height: 1,
             ),
-            SlidableWidget(
-              child: buildListTile(items[index]),
-              onDismissed: (action) {
-                print(action); //스와이프액션
-                return dismissSlidableItem(context, index, action);
-              },
-            ),
+            buildListTile(showList[index], index),
             Divider(
               height: 1,
+              color: colorEEEEEE,
             )
           ],
         );
-      }, childCount: items.length),
+      }, childCount: showList.length),
     );
   }
 
-  Widget _bodyWidget() {
-    return ListView.separated(
-      itemBuilder: (BuildContext context, int index) {
-        return SlidableWidget(
-          child: buildListTile(items[index]),
-          onDismissed: (action) {
-            print(action); //스와이프액션
-            return dismissSlidableItem(context, index, action);
-          },
-        );
-      },
-      separatorBuilder: (context, index) {
-        return Divider(
-          color: Colors.grey,
-          height: 0,
-        );
-      },
-      itemCount: items.length,
-    );
-  }
-
-  void dismissSlidableItem(
-      BuildContext context, int index, SlidableAction action) {
-    switch (action) {
-      case SlidableAction.comment:
-        print(items[index]);
-        Get.to(() => ReviewWriteScreen(postKey: items[index]));
-        break;
-      case SlidableAction.delete:
-        Get.snackbar("삭제", "완료", snackPosition: SnackPosition.BOTTOM);
+  Widget buildSearch() {
+    searchBarOpened = true;
+    void searchBarOn() {
+      searchBarOpened = false;
     }
+
+    return SearchWidget(
+      text: query,
+      hintText: "Search",
+      onChanged: searchMyList,
+      searchBarOn: searchBarOn,
+    );
   }
 
-  Widget buildListTile(item) {
+  void searchMyList(String query) {
+    final searchList = _yamListController.mylist.where((list) {
+      final titleLower = list.name.toLowerCase();
+      final searchLower = query.toLowerCase();
+      return titleLower.contains(searchLower);
+    }).toList();
+
+    setState(() {
+      this.query = query;
+      this.showList = searchList;
+    });
+  }
+
+  Widget buildListTile(item, index) {
     return Container(
       child: ListTile(
         onTap: () {
-          print(item);
+          print(item.id);
+          Get.to(() => ReviewWriteScreen(id: item.id));
         },
+        title: Text(
+          item.name,
+          style: TextStyle(
+            fontFamily: "NotoSans-Regular",
+            fontSize: 18,
+            color: color202020,
+          ),
+        ),
         tileColor: Colors.white,
-        leading: Icon(Icons.circle),
-        subtitle: Text(item),
+        leading: foodsIconReturn(item.category2depth),
+        subtitle: Column(
+          children: [
+            Row(
+              children: [
+                Text(
+                  item.region1depth,
+                  style: TextStyle(
+                    fontFamily: "NotoSans-Regular",
+                    fontSize: 14,
+                    color: colorD9D9D9,
+                  ),
+                ),
+                Text(
+                  " | ",
+                  style: TextStyle(
+                    fontFamily: "NotoSans-Regular",
+                    fontSize: 14,
+                    color: colorD9D9D9,
+                  ),
+                ),
+                Text(
+                  "3.2km",
+                  style: TextStyle(
+                    fontFamily: "NotoSans-Regular",
+                    fontSize: 14,
+                    color: colorD9D9D9,
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Text(
+                  "#계절과일 ",
+                  style: TextStyle(
+                    fontFamily: "NotoSans-Regular",
+                    fontSize: 14,
+                    color: color696969,
+                  ),
+                ),
+                Text(
+                  "#배달쌉가능 ",
+                  style: TextStyle(
+                    fontFamily: "NotoSans-Regular",
+                    fontSize: 14,
+                    color: color696969,
+                  ),
+                )
+              ],
+            )
+          ],
+        ),
+        trailing: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Icon(
+              Icons.warning,
+              size: 20,
+              color: colorFFD74A,
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget buildCard() {
-    return Padding(
-      padding: const EdgeInsets.all(32.0), // 카드 바깥에 패딩
-      child: Card(
-        shadowColor: Colors.grey,
-        elevation: 3,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        color: Colors.yellow[200],
-        child: Container(
-          width: size.width,
-          child: Padding(
-            padding: const EdgeInsets.all(30.0),
-            child: MyListCard(
-              listDescription: "이 구역 맛집을 아는",
-              listGrade: "얌얌박사",
-            ),
-          ),
-        ),
-      ),
-    );
+  SvgPicture foodsIconReturn(String category) {
+    switch (category) {
+      case "디저트":
+        return SvgPicture.asset("assets/images/foods/디저트.svg");
+      case "분식":
+        return SvgPicture.asset("assets/images/foods/분식.svg");
+      case "술집":
+        return SvgPicture.asset("assets/images/foods/술집.svg");
+      case "아시아음식":
+        return SvgPicture.asset("assets/images/foods/아시아음식.svg");
+      case "양식":
+        return SvgPicture.asset("assets/images/foods/양식.svg");
+      case "일식":
+        return SvgPicture.asset("assets/images/foods/일식.svg");
+      case "중식":
+        return SvgPicture.asset("assets/images/foods/중식.svg");
+      case "치킨":
+        return SvgPicture.asset("assets/images/foods/치킨.svg");
+      case "카페":
+        return SvgPicture.asset("assets/images/foods/카페.svg");
+      case "한식":
+        return SvgPicture.asset("assets/images/foods/한식.svg");
+      default:
+        return SvgPicture.asset("assets/images/foods/기타.svg");
+    }
   }
 
   Widget buildDropdown() {

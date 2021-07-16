@@ -7,7 +7,12 @@ class FeedScreen extends StatelessWidget {
     return SafeArea(
         child: Container(
       child: Column(
-        children: [Text("FeedScreen",style: AppTextStyle.notoSansBold2026(Colors.black),)],
+        children: [
+          Text(
+            "FeedScreen",
+            style: AppTextStyle.notoSansBold2026(Colors.black),
+          )
+        ],
       ),
     ));
   }
