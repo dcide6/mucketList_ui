@@ -331,7 +331,7 @@ class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
                 onPressed: () async {
                   ///안돼는부분///
                   String userToken =
-                      'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzMzM4MndhdGVyQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiZXhwIjoxNjI2MDk5MjMyfQ.VHubFeXfpzjYQwnNfbZdFZOnlnFCluh8Bszeb_JOwcs';
+                      'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzMzM4MndhdGVyQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwidHlwZSI6ImFjY2VzcyIsImV4cCI6MTYyNjU0MDA3Mn0.jHsAE5wKsLODdwluJIrWSl99J4M5EaTNNXePvi6F4nE';
                   String url = 'http://yam-stack.com/api/v1/review';
                   var headers = {
                     'Content-Type': 'multipart/form-​data',
