@@ -1,62 +1,54 @@
+import 'dart:convert';
+
 class YamListModel {
-  // final String yamId;
-  // final String accountId;
-  final String restrId;
-  // final Set<dynamic> foods;
-  // final Set<dynamic> tags;
+  final int id;
+  final String name;
+  final String region1depth;
+  final String region2depth;
+  final String region3depth;
+  final String x;
+  final String y;
+  final String category2depth;
+  final List<dynamic> foods;
+  final List<dynamic> tags;
   final String memo;
-  // final List<dynamic> comment;
-  YamListModel(this.restrId, this.memo);
-}
 
-List<YamListModel> loadYamList() {
-  List items = <YamListModel>[
-    YamListModel("매드포갈릭", "신규"),
-    YamListModel("버거킹", "신규"),
-    YamListModel("연안식당", "신규"),
-    YamListModel("런드리피자", "신규"),
-    YamListModel("맘스터치", "신규"),
-    YamListModel("쿠차라", "신규"),
-    YamListModel("엔칠라다", "신규"),
-    YamListModel("부쳐스컷", "신규"),
-    YamListModel("바토", "신규"),
-    YamListModel("그릭조이", "신규"),
-    YamListModel("산토리니", "신규"),
-    YamListModel("서서갈비", "신규"),
-    YamListModel("페트라", "신규"),
-    YamListModel("클레오", "신규"),
-    YamListModel("강가", "신규"),
-  ];
-  return items;
-}
+  YamListModel(
+      {this.id,
+      this.name,
+      this.region1depth,
+      this.region2depth,
+      this.region3depth,
+      this.x,
+      this.y,
+      this.category2depth,
+      this.foods,
+      this.tags,
+      this.memo});
+  factory YamListModel.fromJson(Map<String, dynamic> json) => YamListModel(
+      id: json['id'],
+      name: json['restaurant']['name'],
+      region1depth: json['restaurant']['region1depth'],
+      region2depth: json['restaurant']['region2depth'],
+      region3depth: json['restaurant']['region3depth'],
+      x: json['restaurant']['x'],
+      y: json['restaurant']['y'],
+      category2depth: json['restaurant']['category2depth'],
+      foods: json['foods'],
+      tags: json['tags'],
+      memo: json['memo']);
 
-// public class Yam {
-//   @Id
-//   @GeneratedValue
-//   @Column(name = "yam_id")
-//   private long id;
-//   private LocalDate genTime;
-//
-//   @ManyToOne
-//   @JoinColumn(name = "account_id")
-//   private Account account;
-//
-//   @ManyToOne
-//   @JoinColumn(name = "restr_id")
-//   private Restaurant restaurant;
-//
-//   @ManyToMany
-//   @JoinTable(name = "yam_food_table")
-//   private Set<Food> foods;
-//
-//   @ManyToMany
-//   @JoinTable(name = "yam_tag_table")
-//   private Set<Tag> tags;
-//
-//   private String memo;
-//   private boolean closed;
-//
-//   @OneToOne(mappedBy = "yam")
-//   private Review review;
-//
-// }
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'region1depth': region1depth,
+        'region2depth': region2depth,
+        'region3depth': region3depth,
+        'x': x,
+        'y': y,
+        'category2depth': category2depth,
+        'foods': foods,
+        'tags': tags,
+        'memo': memo,
+      };
+}
