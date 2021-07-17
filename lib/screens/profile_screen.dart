@@ -298,7 +298,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             SizedBox(
-              height: size.height / 5,
+              height: size.height / 10,
             )
           ],
         ),

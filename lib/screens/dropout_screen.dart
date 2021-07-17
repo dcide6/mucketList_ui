@@ -1,6 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mklistui/constants/color.dart';
+import 'package:mklistui/home_page.dart';
+import 'package:mklistui/screens/profile_screen.dart';
 import 'package:mklistui/widgets/custom_alert_dialog.dart';
 
 class DropoutScreen extends StatelessWidget {
@@ -63,14 +66,7 @@ class DropoutScreen extends StatelessWidget {
               child: MaterialButton(
                 color: colorD9D9D9,
                 onPressed: () {
-                  //네트워크 - 회원탈퇴
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return CustomAlertDialog(
-                          title: "정말 탈퇴하시겠습니까?",
-                        );
-                      });
+                  _showDropoutDialog(context);
                 },
                 child: Text(
                   '회원탈퇴',
@@ -86,5 +82,130 @@ class DropoutScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  _showDropoutDialog(context) {
+    showDialog(
+        context: context,
+        builder: (_) => Dialog(
+              elevation: 0,
+              backgroundColor: colorFFFFFF,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15.0),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(height: 15),
+                  Text(
+                    "정말 탈퇴하시겠습니까?",
+                    style: TextStyle(
+                      fontFamily: "NotoSans-Regular",
+                      fontSize: 14,
+                      color: color696969,
+                    ),
+                  ),
+                  SizedBox(height: 15),
+                  Divider(
+                    height: 1,
+                  ),
+                  Container(
+                    height: 50,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        InkWell(
+                          child: Center(
+                            child: Text(
+                              "취소",
+                              style: TextStyle(
+                                fontFamily: "NotoSans-Regular",
+                                fontSize: 14,
+                                color: color696969,
+                              ),
+                            ),
+                          ),
+                          onTap: () {
+                            Get.back();
+                          },
+                        ),
+                        VerticalDivider(
+                          width: 1,
+                        ),
+                        InkWell(
+                          child: Center(
+                            child: Text(
+                              "탈퇴",
+                              style: TextStyle(
+                                fontFamily: "NotoSans-Regular",
+                                fontSize: 14,
+                                color: color696969,
+                              ),
+                            ),
+                          ),
+                          onTap: () {
+                            _showConfirmDialog(context);
+                          },
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ));
+  }
+
+  _showConfirmDialog(context) {
+    showDialog(
+        context: context,
+        builder: (_) => Dialog(
+              elevation: 0,
+              backgroundColor: colorFFFFFF,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15.0),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(height: 15),
+                  Text(
+                    "회원탈퇴가 완료되었습니다.",
+                    style: TextStyle(
+                      fontFamily: "NotoSans-Regular",
+                      fontSize: 14,
+                      color: color696969,
+                    ),
+                  ),
+                  SizedBox(height: 15),
+                  Divider(
+                    height: 1,
+                  ),
+                  Container(
+                    height: 50,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        InkWell(
+                          child: Center(
+                            child: Text(
+                              "확인",
+                              style: TextStyle(
+                                fontFamily: "NotoSans-Regular",
+                                fontSize: 14,
+                                color: color696969,
+                              ),
+                            ),
+                          ),
+                          onTap: () {
+                            Get.offAll(HomePage());
+                            //사용자 삭제하고 홈페이지로
+                          },
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ));
   }
 }
